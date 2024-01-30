@@ -20,9 +20,8 @@ const IssueDetailsPage = async({params} :Props) => {
 
   return (
     <div>
-
     <Heading>{issue.title}</Heading>
-    <Flex className='space-x-3' my='4'>
+    <Flex className='space-x-3' my='2'>
     <IssueStatusBadge status={issue.status}/>
     <p>{issue.createdAt.toDateString()}</p>
     </Flex>
