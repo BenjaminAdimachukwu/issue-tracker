@@ -45,4 +45,5 @@ const LoadingIssuesPage = () => {
   );
 };
 
+export const dynamic = 'forced-dynamic' // by putting this here we tell Nextj, to render this page dynamically request time
 export default LoadingIssuesPage;
