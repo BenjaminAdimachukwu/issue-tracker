@@ -32,7 +32,7 @@ export default function RootLayout({
         <main className='p-5'>
         <Container>
         {children}
-         </Container>
+        </Container>
         </main>
         </Theme>
       </body>
