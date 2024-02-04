@@ -5,6 +5,7 @@ import NavBar from './NavBar'
 import '@radix-ui/themes/styles.css'; // first we imported the default styles of radix-ui
 import './theme-config.css' // then we import thr default  theme configuration 
 import { Container, Theme, ThemePanel } from '@radix-ui/themes';
+import AuthProvider from './auth/Provider';
 
 const inter = Inter({
    subsets: ['latin'],
@@ -26,8 +27,8 @@ export default function RootLayout({
     <html lang="en">
 
       <body className={inter.variable}>
+        <AuthProvider>
       <Theme accentColor="iris" radius="large">
-    
         <NavBar/>
         <main className='p-5'>
         <Container>
@@ -35,6 +36,7 @@ export default function RootLayout({
         </Container>
         </main>
         </Theme>
+        </AuthProvider>
       </body>
     </html>
   )
