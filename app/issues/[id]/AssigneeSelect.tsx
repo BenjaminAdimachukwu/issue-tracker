@@ -1,11 +1,11 @@
 "use client";
+import { Skeleton } from "@/app/components";
 import { Issue, User } from "@prisma/client";
 import { Select } from "@radix-ui/themes";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
-import React, { Fragment, useEffect, useState } from "react";
-import { Skeleton } from "@/app/components";
-import toast, { Toaster } from 'react-hot-toast'
+import { Fragment } from "react";
+import toast, { Toaster } from 'react-hot-toast';
 
 const AssigneeSelect = ({ issue }: { issue: Issue }) => {
   // const [users, setUsers] = useState<User[]>([]);
@@ -22,27 +22,24 @@ const AssigneeSelect = ({ issue }: { issue: Issue }) => {
     data: users,
     error,
     isLoading,
-  } = useQuery<User[]>({
-    queryKey: ["users"],
-    queryFn: () => axios.get("/api/users").then((res) => res.data),
-    staleTime: 60 * 1000, // 60 sec
-    retry: 3,
-  });
+  } = useUsers()
   if (isLoading) return <Skeleton />;
   if (error) return null;
+
+  const assignIssue = (userId: string) => {
+    axios.patch(`/napi/issues/${issue.id}`, {
+      assignedToUserId: userId || null,
+      
+    }).catch(()=> {
+      toast.error('user could not be assigned')
+    })
+    
+  }
   return (
     <Fragment>
     <Select.Root
       defaultValue={issue.assignedToUserId || null!}
-      onValueChange={(userId) => {
-        axios.patch(`/napi/issues/${issue.id}`, {
-          assignedToUserId: userId || null,
-          
-        }).catch(()=> {
-          toast.error('user could not be assigned')
-        })
-        
-      }}
+      onValueChange={assignIssue}
     >
       <Select.Trigger placeholder="assign.." />
       <Select.Content>
@@ -62,6 +59,13 @@ const AssigneeSelect = ({ issue }: { issue: Issue }) => {
   );
 };
 
+const useUsers = ()=>
+useQuery<User[]>({
+  queryKey: ["users"],
+  queryFn: () => axios.get("/api/users").then((res) => res.data),
+  staleTime: 60 * 1000, // 60 sec
+  retry: 3,
+});
 export default AssigneeSelect;
 
 function usestate(p0: never[]): [any, any] {
