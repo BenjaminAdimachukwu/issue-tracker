@@ -1,46 +1,61 @@
-import React from 'react'
-import { Button, Table, TextArea,  } from '@radix-ui/themes'
-//import Link from '../components/Link'
-import prisma from '@/prisma/client'
-//import IssueStatusBadge from '../components/IssueStatusBadge'
-import {IssueStatusBadge, Link} from '@/app/components/index'
-import IssueActions from './IssueActions'
-const IssuesPage = async () => {
-
- const issues = await  prisma.issue.findMany()
- 
+import { IssueStatusBadge, Link } from "@/app/components/index";
+import prisma from "@/prisma/client";
+import { Table } from "@radix-ui/themes";
+import IssueActions from "./IssueActions";
+import { Status } from "@prisma/client";
+interface Props {
+  searchParams: { status: Status };
+}
+const IssuesPage = async ({ searchParams }: Props) => {
+  const statuses = Object.values(Status)
+  const status = statuses.includes(searchParams.status) ? searchParams.status : undefined
+  console.log(statuses)
+  const issues = await prisma.issue.findMany({
+    where: { 
+      status: status
+    }
+  });
+  
+  //console.log(issues)
+  //console.log(searchParams);
   return (
     <div>
-     <IssueActions/>
-      <Table.Root variant='surface'>
+      <IssueActions />
+      <Table.Root variant="surface">
         <Table.Header>
           <Table.Row>
-
-            <Table.ColumnHeaderCell>issue</Table.ColumnHeaderCell>
-            <Table.ColumnHeaderCell className='hidden md:table-cell'>status</Table.ColumnHeaderCell>
-            <Table.ColumnHeaderCell className='hidden md:table-cell'>created</Table.ColumnHeaderCell>
+            <Table.ColumnHeaderCell>Issue</Table.ColumnHeaderCell>
+            <Table.ColumnHeaderCell className="hidden md:table-cell">
+              status
+            </Table.ColumnHeaderCell>
+            <Table.ColumnHeaderCell className="hidden md:table-cell">
+              created
+            </Table.ColumnHeaderCell>
           </Table.Row>
-
         </Table.Header>
         <Table.Body>
           {issues.map((issue) => (
-          <Table.Row key={issue.id}>
-            <Table.Cell>
-              <Link href= {`/issues/${issue.id}`}>
-              {issue.title}
-              </Link>
-            <div className='block md:hidden'> <IssueStatusBadge status ={issue.status}/> </div>
-            </Table.Cell>
-            <Table.Cell className='hidden md:table-cell'> <IssueStatusBadge status={issue.status}/></Table.Cell>
-            <Table.Cell className='hidden md:table-cell'>{issue.createdAt.toDateString()}</Table.Cell>
-
-          </Table.Row>
+            <Table.Row key={issue.id}>
+              <Table.Cell>
+                <Link href={`/issues/${issue.id}`}>{issue.title}</Link>
+                <div className="block md:hidden">
+                  {" "}
+                  <IssueStatusBadge status={issue.status} />{" "}
+                </div>
+              </Table.Cell>
+              <Table.Cell className="hidden md:table-cell">
+                {" "}
+                <IssueStatusBadge status={issue.status} />
+              </Table.Cell>
+              <Table.Cell className="hidden md:table-cell">
+                {issue.createdAt.toDateString()}
+              </Table.Cell>
+            </Table.Row>
           ))}
         </Table.Body>
-
       </Table.Root>
-      </div>
-  )
-}
+    </div>
+  );
+};
 
-export default IssuesPage
+export default IssuesPage;

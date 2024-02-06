@@ -27,7 +27,7 @@ const AssigneeSelect = ({ issue }: { issue: Issue }) => {
   if (error) return null;
 
   const assignIssue = (userId: string) => {
-    axios.patch(`/napi/issues/${issue.id}`, {
+    axios.patch(`/api/issues/${issue.id}`, {
       assignedToUserId: userId || null,
       
     }).catch(()=> {
