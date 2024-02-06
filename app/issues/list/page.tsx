@@ -4,10 +4,10 @@ import { Table } from "@radix-ui/themes";
 import IssueActions from "./IssueActions";
 import { Status } from "@prisma/client";
 import { Issue } from "next/dist/build/swc";
-import NextLink from 'next/link'
+import NextLink from "next/link";
 import { ArrowUpIcon } from "@radix-ui/react-icons";
 interface Props {
-  searchParams: { status: Status, orderBy: keyof Issue };
+  searchParams: { status: Status; orderBy: keyof Issue };
 }
 const IssuesPage = async ({ searchParams }: Props) => {
   const statuses = Object.values(Status);
@@ -15,28 +15,32 @@ const IssuesPage = async ({ searchParams }: Props) => {
     ? searchParams.status
     : undefined;
 
-    //console.log(statuses)
-    const columns: { label: string; value: keyof Issue; className?: string }[] = [
-      { label: "Issue", value: "title" },
-      {
-        label: "Status",
-        value: "status" as keyof Issue,
-        className: "hidden md:table-cell",
-      },
-      {
-        label: "Created",
-        value: "createdAt" as keyof Issue,
-        className: "hidden md:table-cell",
-      },
-    ];
-    const orderBy = columns.map(column => column.value).includes(searchParams.orderBy) ? {[searchParams.orderBy]: 'asc' }: undefined
-    
-    const issues = await prisma.issue.findMany({
+  //console.log(statuses)
+  const columns: { label: string; value: keyof Issue; className?: string }[] = [
+    { label: "Issue", value: "title" },
+    {
+      label: "Status",
+      value: "status" as keyof Issue,
+      className: "hidden md:table-cell",
+    },
+    {
+      label: "Created",
+      value: "createdAt" as keyof Issue,
+      className: "hidden md:table-cell",
+    },
+  ];
+  const orderBy = columns
+    .map((column) => column.value)
+    .includes(searchParams.orderBy)
+    ? { [searchParams.orderBy]: "asc" }
+    : undefined;
+
+  const issues = await prisma.issue.findMany({
     where: {
       status: status,
-      },
-      orderBy
-    });
+    },
+    orderBy,
+  });
   //console.log(issues)
   //console.log(searchParams);
   return (
@@ -46,13 +50,17 @@ const IssuesPage = async ({ searchParams }: Props) => {
         <Table.Header>
           <Table.Row>
             {columns.map((column) => (
-              <Table.ColumnHeaderCell key={column.value}>
-                <NextLink href={{
-                  query : {...searchParams, orderBy: column.value}
-                }}>
-                {column.label}
+              <Table.ColumnHeaderCell key={column.value} className={column.className}>
+                <NextLink
+                  href={{
+                    query: { ...searchParams, orderBy: column.value },
+                  }}
+                >
+                  {column.label}
                 </NextLink>
-                {column.value === searchParams.orderBy && <ArrowUpIcon className="inline" />}
+                {column.value === searchParams.orderBy && (
+                  <ArrowUpIcon className="inline" />
+                )}
               </Table.ColumnHeaderCell>
             ))}
           </Table.Row>
