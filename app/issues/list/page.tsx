@@ -3,19 +3,37 @@ import prisma from "@/prisma/client";
 import { Table } from "@radix-ui/themes";
 import IssueActions from "./IssueActions";
 import { Status } from "@prisma/client";
+import { Issue } from "next/dist/build/swc";
+import NextLink from 'next/link'
+import { ArrowUpIcon } from "@radix-ui/react-icons";
 interface Props {
-  searchParams: { status: Status };
+  searchParams: { status: Status, orderBy: keyof Issue };
 }
 const IssuesPage = async ({ searchParams }: Props) => {
-  const statuses = Object.values(Status)
-  const status = statuses.includes(searchParams.status) ? searchParams.status : undefined
-  console.log(statuses)
+  const statuses = Object.values(Status);
+  const status = statuses.includes(searchParams.status)
+    ? searchParams.status
+    : undefined;
+  //console.log(statuses)
   const issues = await prisma.issue.findMany({
-    where: { 
-      status: status
-    }
+    where: {
+      status: status,
+    },
   });
-  
+  const columns: { label: string; value: keyof Issue; className?: string }[] = [
+    { label: "Issue", value: "title" },
+    {
+      label: "Status",
+      value: "status" as keyof Issue,
+      className: "hidden md:table-cell",
+    },
+    {
+      label: "Created",
+      value: "createdAt" as keyof Issue,
+      className: "hidden md:table-cell",
+    },
+  ];
+
   //console.log(issues)
   //console.log(searchParams);
   return (
@@ -24,13 +42,16 @@ const IssuesPage = async ({ searchParams }: Props) => {
       <Table.Root variant="surface">
         <Table.Header>
           <Table.Row>
-            <Table.ColumnHeaderCell>Issue</Table.ColumnHeaderCell>
-            <Table.ColumnHeaderCell className="hidden md:table-cell">
-              status
-            </Table.ColumnHeaderCell>
-            <Table.ColumnHeaderCell className="hidden md:table-cell">
-              created
-            </Table.ColumnHeaderCell>
+            {columns.map((column) => (
+              <Table.ColumnHeaderCell key={column.value}>
+                <NextLink href={{
+                  query : {...searchParams, orderBy: column.value}
+                }}>
+                {column.label}
+                </NextLink>
+                {column.value === searchParams.orderBy && <ArrowUpIcon className="inline" />}
+              </Table.ColumnHeaderCell>
+            ))}
           </Table.Row>
         </Table.Header>
         <Table.Body>
