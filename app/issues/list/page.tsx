@@ -14,26 +14,29 @@ const IssuesPage = async ({ searchParams }: Props) => {
   const status = statuses.includes(searchParams.status)
     ? searchParams.status
     : undefined;
-  //console.log(statuses)
-  const issues = await prisma.issue.findMany({
+
+    //console.log(statuses)
+    const columns: { label: string; value: keyof Issue; className?: string }[] = [
+      { label: "Issue", value: "title" },
+      {
+        label: "Status",
+        value: "status" as keyof Issue,
+        className: "hidden md:table-cell",
+      },
+      {
+        label: "Created",
+        value: "createdAt" as keyof Issue,
+        className: "hidden md:table-cell",
+      },
+    ];
+    const orderBy = columns.map(column => column.value).includes(searchParams.orderBy) ? {[searchParams.orderBy]: 'asc' }: undefined
+    
+    const issues = await prisma.issue.findMany({
     where: {
       status: status,
-    },
-  });
-  const columns: { label: string; value: keyof Issue; className?: string }[] = [
-    { label: "Issue", value: "title" },
-    {
-      label: "Status",
-      value: "status" as keyof Issue,
-      className: "hidden md:table-cell",
-    },
-    {
-      label: "Created",
-      value: "createdAt" as keyof Issue,
-      className: "hidden md:table-cell",
-    },
-  ];
-
+      },
+      orderBy
+    });
   //console.log(issues)
   //console.log(searchParams);
   return (
