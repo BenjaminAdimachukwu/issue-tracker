@@ -7,6 +7,8 @@ import { Issue } from "next/dist/build/swc";
 import { ArrowUpIcon } from "@radix-ui/react-icons";
 import Pagination from "@/app/components/Pagination";
 import IssueTable, { IssueQuery, columnNames } from "./IssueTable";
+import { Suspense } from "react";
+import { Metadata } from "next";
 interface Props {
   searchParams: IssueQuery
 }
@@ -16,7 +18,6 @@ const IssuesPage = async ({ searchParams }: Props) => {
     ? searchParams.status
     : undefined;
 
-  //console.log(statuses)
   
   const orderBy = columnNames
     .includes(searchParams.orderBy)
@@ -34,9 +35,9 @@ const IssuesPage = async ({ searchParams }: Props) => {
   });
 
   const issueCount = await prisma.issue.count({where})
-  //console.log(issues)
-  //console.log(searchParams);
+
   return (
+    <Suspense fallback={<div>Loading issues...</div>}>
     <Flex direction='column' gap='3'>
       <IssueActions />
       <IssueTable searchParams={searchParams} issues={issues}/>
@@ -46,7 +47,14 @@ const IssuesPage = async ({ searchParams }: Props) => {
       currentpage={page}
       />
     </Flex>
+    </Suspense>
   );
 };
+export const dynamic = 'force-dynamic';
 
+export const metadata: Metadata = {
+  title: 'Issue Tracker - Issue List',
+  description: 'View all project issues'
+};
 export default IssuesPage;
+

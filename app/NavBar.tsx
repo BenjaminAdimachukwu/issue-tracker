@@ -33,6 +33,7 @@ const NavBar = () => {
         </Flex>
       </Container>
     </nav>
+  
   );
 };
 

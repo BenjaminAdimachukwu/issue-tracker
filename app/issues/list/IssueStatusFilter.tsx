@@ -3,7 +3,7 @@
 import { Issue, Status, User } from "@prisma/client";
 import { Select } from "@radix-ui/themes";
 import axios from "axios";
-import React, { useEffect, useState } from "react";
+import React, { Suspense, useEffect, useState } from "react";
 import prisma from "@/prisma/client";
 import { useRouter, useSearchParams } from "next/navigation";
 
@@ -17,8 +17,9 @@ const statuses: { label: string; value?: Status }[] = [
 const IssueStatusFilter = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
-  //console.log(searchParams)
+ 
   return (
+    <Suspense fallback={<div>Loading...</div>}>
     <Select.Root
     defaultValue={searchParams.get('status') || ''}
       onValueChange={(status) => {
@@ -46,6 +47,7 @@ const IssueStatusFilter = () => {
         ))}
       </Select.Content>
     </Select.Root>
+    </Suspense>
   );
 };
 

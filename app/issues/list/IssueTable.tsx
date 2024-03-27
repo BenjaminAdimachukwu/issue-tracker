@@ -4,7 +4,7 @@ import { ArrowUpIcon } from '@radix-ui/react-icons'
 import { Table } from '@radix-ui/themes'
 import Link from 'next/link'
 import NextLink from "next/link";
-import React from 'react'
+import React, { Suspense } from 'react'
 
 
 export interface IssueQuery {
@@ -25,6 +25,7 @@ const IssueTable = ({ searchParams, issues }:Props) => {
    
      
   return (
+    <Suspense fallback={<div>Loading...</div>}>
     <Table.Root variant="surface">
         <Table.Header>
           <Table.Row>
@@ -65,6 +66,7 @@ const IssueTable = ({ searchParams, issues }:Props) => {
           ))}
         </Table.Body>
       </Table.Root>
+      </Suspense>
   )
 }
 const columns: { label: string; value: keyof Issue; className?: string }[] = [
